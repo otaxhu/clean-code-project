@@ -6,6 +6,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	ErrPasswordTooLong = bcrypt.ErrPasswordTooLong
+)
+
 func EncryptPassword(password []byte) ([]byte, error) {
 	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 }
