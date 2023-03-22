@@ -9,10 +9,14 @@ import (
 
 // Repository representa las operaciones CRUD de la aplicacion
 //
-//go:generate mockery --name=Repository --output=repository --inpackage=true
+//go:generate mockery --name=Repository
 type Repository interface {
 	SaveUser(ctx context.Context, email, name, password string) error
 	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
+
+	SaveUserRole(ctx context.Context, userId string, roleId int) error
+	DeleteUserRole(ctx context.Context, userId string, roleId int) error
+	GetUserRoles(ctx context.Context, userId string) ([]entity.UserRole, error)
 }
 
 type repo struct {
