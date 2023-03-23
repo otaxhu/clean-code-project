@@ -14,6 +14,20 @@ type Repository struct {
 	mock.Mock
 }
 
+// DeleteUser provides a mock function with given fields: ctx, userId
+func (_m *Repository) DeleteUser(ctx context.Context, userId string) error {
+	ret := _m.Called(ctx, userId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteUserRole provides a mock function with given fields: ctx, userId, roleId
 func (_m *Repository) DeleteUserRole(ctx context.Context, userId string, roleId int) error {
 	ret := _m.Called(ctx, userId, roleId)
@@ -47,6 +61,32 @@ func (_m *Repository) GetUserByEmail(ctx context.Context, email string) (*entity
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetUserById provides a mock function with given fields: ctx, userId
+func (_m *Repository) GetUserById(ctx context.Context, userId string) (*entity.User, error) {
+	ret := _m.Called(ctx, userId)
+
+	var r0 *entity.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*entity.User, error)); ok {
+		return rf(ctx, userId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.User); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*entity.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, userId)
 	} else {
 		r1 = ret.Error(1)
 	}
