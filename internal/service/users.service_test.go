@@ -18,22 +18,28 @@ var s Service = New(repo)
 var tooLongPassword = "A continuación, colocaré más de 72 caracteres, que es el máximo permitido por la encriptación, para asegurarme de que la prueba sea robusta y cubra todos los posibles casos de uso"
 var existentRolesUserId = uuid.NewString()
 var validUserIdButNoRoles = uuid.NewString()
+var validUserId = uuid.NewString()
 
-var errFKConstraintFails = errors.New("foreign key constraint fails")
+var (
+	errRepositoryFKConstraintFails = errors.New("foreign key constraint fails")
+	errRepositoryUserNotFound      = errors.New("user not found")
+)
 
 func TestMain(m *testing.M) {
 	validPassword, _ := encryption.EncryptPassword([]byte("validPassword"))
 	encryptedPassword := encryption.FromHashToBase64(validPassword)
-	validUser := &entity.User{Email: "test@exists.com", Password: encryptedPassword}
+	validUser := &entity.User{Id: validUserId, Email: "test@exists.com", Password: encryptedPassword}
 	validUserRoles := []entity.UserRole{{Id: uuid.NewString(), UserId: existentRolesUserId, RoleId: 1}}
 
 	repo.On("SaveUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
-	repo.On("SaveUser", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(encryption.ErrPasswordTooLong)
 
 	repo.On("GetUserByEmail", mock.Anything, "test@valid.com").Return(nil, nil)
 
 	repo.On("GetUserByEmail", mock.Anything, "test@notExists.com").Return(nil, errInvalidCredentials)
 	repo.On("GetUserByEmail", mock.Anything, "test@exists.com").Return(validUser, nil)
+
+	repo.On("GetUserById", mock.Anything, validUserId).Return(validUser, nil)
+	repo.On("GetUserById", mock.Anything, "inexistentUserId").Return(nil, errRepositoryUserNotFound)
 
 	repo.On("GetUserRoles", mock.Anything, existentRolesUserId).Return(validUserRoles, nil)
 	repo.On("GetUserRoles", mock.Anything, "inexistentUserId").Return(nil, nil)
@@ -41,10 +47,12 @@ func TestMain(m *testing.M) {
 
 	repo.On("SaveUserRole", mock.Anything, existentRolesUserId, 1).Return(nil)
 	repo.On("SaveUserRole", mock.Anything, validUserIdButNoRoles, 1).Return(nil)
-	repo.On("SaveUserRole", mock.Anything, "inexistentUserId", mock.Anything).Return(errFKConstraintFails)
+	repo.On("SaveUserRole", mock.Anything, "inexistentUserId", mock.Anything).Return(errRepositoryFKConstraintFails)
 
 	repo.On("DeleteUserRole", mock.Anything, existentRolesUserId, 1).Return(nil)
 	repo.On("DeleteUserRole", mock.Anything, "inexistentUserId", mock.Anything).Return(errUserRoleNotFound)
+
+	repo.On("DeleteUser", mock.Anything, validUserId).Return(nil)
 
 	code := m.Run()
 	os.Exit(code)
@@ -150,13 +158,13 @@ func TestAddUserRole(t *testing.T) {
 			"InvalidUserId",
 			"inexistentUserId",
 			1,
-			errFKConstraintFails,
+			errRepositoryFKConstraintFails,
 		},
 		{
 			"RoleAlreadyExist",
 			existentRolesUserId,
 			1,
-			nil,
+			errUserRoleAdded,
 		},
 	}
 	ctx := context.Background()
@@ -196,7 +204,48 @@ func TestRemoveUserRole(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			repo.Mock.Test(t)
 			if err := s.RemoveUserRole(ctx, tc.userId, tc.roleId); err != tc.expectedError {
+				t.Errorf("Expected error %v, got %v", tc.expectedError, err)
+			}
+		})
+	}
+}
+
+func TestDeleteUser(t *testing.T) {
+	testCases := []struct {
+		name          string
+		userId        string
+		password      string
+		expectedError error
+	}{
+		{
+			"DeleteUser_Success",
+			validUserId,
+			"validPassword",
+			nil,
+		},
+		{
+			"InvalidUserId",
+			"inexistentUserId",
+			"validPassword",
+			errInvalidCredentials,
+		},
+		{
+			"InvalidPassword",
+			validUserId,
+			"invalidPassword",
+			errInvalidCredentials,
+		},
+	}
+	ctx := context.Background()
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			repo.Mock.Test(t)
+			if err := s.DeleteUser(ctx, tc.userId, tc.password); err != tc.expectedError {
 				t.Errorf("Expected error %v, got %v", tc.expectedError, err)
 			}
 		})
