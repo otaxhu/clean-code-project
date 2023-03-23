@@ -43,6 +43,21 @@ func (s *serv) LoginUser(ctx context.Context, email, password string) (*models.U
 	return &models.User{Id: u.Id, Name: u.Name, Email: u.Email}, nil
 }
 
+func (s *serv) DeleteUser(ctx context.Context, userId, password string) error {
+	user, err := s.repo.GetUserById(ctx, userId)
+	if err != nil {
+		return errInvalidCredentials
+	}
+	hash, err := encryption.FromBase64ToHash(user.Password)
+	if err != nil {
+		return err
+	}
+	if err := encryption.CompareHashAndPassword(hash, []byte(password)); err != nil {
+		return errInvalidCredentials
+	}
+	return s.repo.DeleteUser(ctx, userId)
+}
+
 func (s *serv) AddUserRole(ctx context.Context, userId string, roleId int) error {
 	userRoles, err := s.repo.GetUserRoles(ctx, userId)
 	if err != nil {
@@ -50,7 +65,7 @@ func (s *serv) AddUserRole(ctx context.Context, userId string, roleId int) error
 	}
 	for _, r := range userRoles {
 		if roleId == r.RoleId {
-			return nil
+			return errUserRoleAdded
 		}
 	}
 	return s.repo.SaveUserRole(ctx, userId, roleId)
