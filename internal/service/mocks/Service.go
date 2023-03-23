@@ -28,6 +28,20 @@ func (_m *Service) AddUserRole(ctx context.Context, userId string, roleId int) e
 	return r0
 }
 
+// DeleteUser provides a mock function with given fields: ctx, userId
+func (_m *Service) DeleteUser(ctx context.Context, userId string) error {
+	ret := _m.Called(ctx, userId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // LoginUser provides a mock function with given fields: ctx, email, password
 func (_m *Service) LoginUser(ctx context.Context, email string, password string) (*models.User, error) {
 	ret := _m.Called(ctx, email, password)
