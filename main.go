@@ -15,8 +15,8 @@ func main() {
 		fx.Provide(
 			context.Background,
 			settings.New,
-			database.New,
-			repository.New,
+			database.NewMysqlConection,
+			repository.NewRepoMysql,
 			service.New,
 		),
 		fx.Invoke(),
