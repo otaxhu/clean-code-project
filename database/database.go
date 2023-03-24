@@ -23,15 +23,24 @@ func NewMysqlConection(ctx context.Context, s *settings.Settings) (*sqlx.DB, err
 	return sqlx.ConnectContext(ctx, "mysql", connectionString)
 }
 
-func NewMongoConnection(ctx context.Context, s *settings.Settings) (*mongo.Client, error) {
-	connectionString := fmt.Sprintf(
-		"mongodb://%s:%s@%s:%d/%s",
-		s.MongoConfig.User,
-		s.MongoConfig.Password,
-		s.MongoConfig.Host,
-		s.MongoConfig.Port,
-		s.MongoConfig.Name,
-	)
+func NewMongoConnection(ctx context.Context, s *settings.Settings) (*mongo.Database, error) {
+	var connectionString string
+	if s.MongoConfig.User == "" && s.MongoConfig.Password == "" {
+		connectionString = fmt.Sprintf("mongodb://%s:%d/%s", s.MongoConfig.Host, s.MongoConfig.Port, s.MongoConfig.Name)
+	} else {
+		connectionString = fmt.Sprintf(
+			"mongodb://%s:%s@%s:%d/%s",
+			s.MongoConfig.User,
+			s.MongoConfig.Password,
+			s.MongoConfig.Host,
+			s.MongoConfig.Port,
+			s.MongoConfig.Name,
+		)
+	}
 	options := options.Client().ApplyURI(connectionString)
-	return mongo.Connect(ctx, options)
+	connection, err := mongo.Connect(ctx, options)
+	if err != nil {
+		return nil, err
+	}
+	return connection.Database(s.MongoConfig.Name), nil
 }
