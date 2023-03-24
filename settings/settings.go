@@ -20,7 +20,7 @@ type DatabaseConfig struct {
 type Settings struct {
 	Port        int            `yaml:"port"`
 	MysqlConfig DatabaseConfig `yaml:"mysql_database"`
-	MongoConfig DatabaseConfig `yaml:"mongodb_database"`
+	MongoConfig DatabaseConfig `yaml:"mongo_database"`
 }
 
 func New() (*Settings, error) {

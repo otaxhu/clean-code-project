@@ -6,10 +6,9 @@ mysql_database:
   password: 
   name: clean_code
 
-# TODO: conexion a mongodb
 mongo_database:
-  host: HOST_TODO
-  port: PORT_TODO
-  user: USER_TODO
-  password: PASSWORD_TODO
-  name: DB_NAME_TODO
+  host: localhost
+  port: 27017
+  user: 
+  password: 
+  name: clear_code
