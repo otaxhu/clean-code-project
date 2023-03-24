@@ -58,6 +58,7 @@ func (s *serv) DeleteUser(ctx context.Context, userId, password string) error {
 	return s.repo.DeleteUser(ctx, userId)
 }
 
+// BUG: al utilizar el repository de mongo, dice "panic: mongo: no documents in result"
 func (s *serv) AddUserRole(ctx context.Context, userId string, roleId int) error {
 	userRoles, err := s.repo.GetUserRoles(ctx, userId)
 	if err != nil {
