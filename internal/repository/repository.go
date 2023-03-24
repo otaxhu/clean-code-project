@@ -27,13 +27,13 @@ type repoMysql struct {
 }
 
 type repoMongo struct {
-	client *mongo.Client
+	db *mongo.Database
 }
 
 func NewRepoMysql(db *sqlx.DB) Repository {
 	return &repoMysql{db: db}
 }
 
-func NewRepoMongo(client *mongo.Client) Repository {
-	return &repoMongo{client: client}
+func NewRepoMongo(db *mongo.Database) Repository {
+	return &repoMongo{db: db}
 }
