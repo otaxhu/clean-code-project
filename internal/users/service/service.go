@@ -3,14 +3,14 @@ package service
 import (
 	"context"
 
-	"github.com/otaxhu/clean-code-project/internal/models"
-	"github.com/otaxhu/clean-code-project/internal/repository"
+	"github.com/otaxhu/clean-code-project/internal/users/models"
+	"github.com/otaxhu/clean-code-project/internal/users/repository"
 )
 
 // Service representa a la logica de negocios de la aplicacion
 //
-//go:generate mockery --name=Service
-type Service interface {
+//go:generate mockery --name=UsersService
+type UsersService interface {
 	RegisterUser(ctx context.Context, email, name, password string) error
 	LoginUser(ctx context.Context, email, password string) (*models.User, error)
 	DeleteUser(ctx context.Context, userId, password string) error
@@ -19,10 +19,10 @@ type Service interface {
 	RemoveUserRole(ctx context.Context, userId string, roleId int) error
 }
 
-type serv struct {
-	repo repository.Repository
+type userServ struct {
+	repo repository.UsersRepository
 }
 
-func New(repo repository.Repository) Service {
-	return &serv{repo: repo}
+func New(repo repository.UsersRepository) UsersService {
+	return &userServ{repo: repo}
 }

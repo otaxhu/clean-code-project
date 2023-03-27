@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/otaxhu/clean-code-project/database"
-	"github.com/otaxhu/clean-code-project/internal/repository"
-	"github.com/otaxhu/clean-code-project/internal/service"
+	"github.com/otaxhu/clean-code-project/internal/users/repository"
+	"github.com/otaxhu/clean-code-project/internal/users/service"
 	"github.com/otaxhu/clean-code-project/settings"
 	"go.uber.org/fx"
 )
@@ -16,7 +16,7 @@ func main() {
 			context.Background,
 			settings.New,
 			database.NewMysqlConection,
-			repository.NewRepoMysql,
+			repository.NewUsersRepoMysql,
 			service.New,
 		),
 		fx.Invoke(),

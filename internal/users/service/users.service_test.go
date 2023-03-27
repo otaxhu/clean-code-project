@@ -8,13 +8,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/otaxhu/clean-code-project/common/encryption"
-	"github.com/otaxhu/clean-code-project/internal/entity"
-	"github.com/otaxhu/clean-code-project/internal/repository/mocks"
+	"github.com/otaxhu/clean-code-project/internal/users/entity"
+	"github.com/otaxhu/clean-code-project/internal/users/repository/mocks"
 	"github.com/stretchr/testify/mock"
 )
 
 var repo *mocks.Repository = &mocks.Repository{}
-var s Service = New(repo)
+var s UsersService = New(repo)
 var tooLongPassword = "A continuación, colocaré más de 72 caracteres, que es el máximo permitido por la encriptación, para asegurarme de que la prueba sea robusta y cubra todos los posibles casos de uso"
 var existentRolesUserId = uuid.NewString()
 var validUserIdButNoRoles = uuid.NewString()
