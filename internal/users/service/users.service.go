@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/otaxhu/clean-code-project/common/encryption"
-	"github.com/otaxhu/clean-code-project/internal/models"
+	"github.com/otaxhu/clean-code-project/internal/users/models"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 	errUserRoleNotFound   = errors.New("user role not found")
 )
 
-func (s *serv) RegisterUser(ctx context.Context, email, name, password string) error {
+func (s *userServ) RegisterUser(ctx context.Context, email, name, password string) error {
 	u, _ := s.repo.GetUserByEmail(ctx, email)
 	if u != nil {
 		return errUserAlreadyExists
@@ -28,7 +28,7 @@ func (s *serv) RegisterUser(ctx context.Context, email, name, password string) e
 	return s.repo.SaveUser(ctx, email, name, password)
 }
 
-func (s *serv) LoginUser(ctx context.Context, email, password string) (*models.User, error) {
+func (s *userServ) LoginUser(ctx context.Context, email, password string) (*models.User, error) {
 	u, err := s.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, errInvalidCredentials
@@ -43,7 +43,7 @@ func (s *serv) LoginUser(ctx context.Context, email, password string) (*models.U
 	return &models.User{Id: u.Id, Name: u.Name, Email: u.Email}, nil
 }
 
-func (s *serv) DeleteUser(ctx context.Context, userId, password string) error {
+func (s *userServ) DeleteUser(ctx context.Context, userId, password string) error {
 	user, err := s.repo.GetUserById(ctx, userId)
 	if err != nil {
 		return errInvalidCredentials
@@ -59,7 +59,7 @@ func (s *serv) DeleteUser(ctx context.Context, userId, password string) error {
 }
 
 // BUG: al utilizar el repository de mongo, dice "panic: mongo: no documents in result"
-func (s *serv) AddUserRole(ctx context.Context, userId string, roleId int) error {
+func (s *userServ) AddUserRole(ctx context.Context, userId string, roleId int) error {
 	userRoles, err := s.repo.GetUserRoles(ctx, userId)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (s *serv) AddUserRole(ctx context.Context, userId string, roleId int) error
 	return s.repo.SaveUserRole(ctx, userId, roleId)
 }
 
-func (s *serv) RemoveUserRole(ctx context.Context, userId string, roleId int) error {
+func (s *userServ) RemoveUserRole(ctx context.Context, userId string, roleId int) error {
 	userRoles, err := s.repo.GetUserRoles(ctx, userId)
 	if err != nil {
 		return err

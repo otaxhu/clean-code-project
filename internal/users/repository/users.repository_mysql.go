@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/otaxhu/clean-code-project/internal/entity"
+	"github.com/otaxhu/clean-code-project/internal/users/entity"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 	qryGetUserRoles   = "SELECT id, user_id, role_id FROM user_roles WHERE user_id = ?"
 )
 
-func (r *repoMysql) SaveUser(ctx context.Context, email, name, password string) error {
+func (r *usersRepoMysql) SaveUser(ctx context.Context, email, name, password string) error {
 	_, err := r.db.ExecContext(ctx, qryInsertUser, uuid.NewString(), email, name, password)
 	if err != nil {
 		return err
@@ -25,7 +25,7 @@ func (r *repoMysql) SaveUser(ctx context.Context, email, name, password string) 
 	return nil
 }
 
-func (r *repoMysql) DeleteUser(ctx context.Context, userId string) error {
+func (r *usersRepoMysql) DeleteUser(ctx context.Context, userId string) error {
 	_, err := r.db.ExecContext(ctx, qryDeleteUser, userId)
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func (r *repoMysql) DeleteUser(ctx context.Context, userId string) error {
 	return nil
 }
 
-func (r *repoMysql) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+func (r *usersRepoMysql) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
 	u := &entity.User{}
 	err := r.db.GetContext(ctx, u, qryGetUserByEmail, email)
 	if err != nil {
@@ -42,7 +42,7 @@ func (r *repoMysql) GetUserByEmail(ctx context.Context, email string) (*entity.U
 	return u, nil
 }
 
-func (r *repoMysql) GetUserById(ctx context.Context, userId string) (*entity.User, error) {
+func (r *usersRepoMysql) GetUserById(ctx context.Context, userId string) (*entity.User, error) {
 	u := &entity.User{}
 	err := r.db.GetContext(ctx, u, qryGetUserById)
 	if err != nil {
@@ -51,7 +51,7 @@ func (r *repoMysql) GetUserById(ctx context.Context, userId string) (*entity.Use
 	return u, nil
 }
 
-func (r *repoMysql) SaveUserRole(ctx context.Context, userId string, roleId int) error {
+func (r *usersRepoMysql) SaveUserRole(ctx context.Context, userId string, roleId int) error {
 	_, err := r.db.ExecContext(ctx, qryInsertUserRole, uuid.NewString(), userId, roleId)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (r *repoMysql) SaveUserRole(ctx context.Context, userId string, roleId int)
 	return nil
 }
 
-func (r *repoMysql) DeleteUserRole(ctx context.Context, userId string, roleId int) error {
+func (r *usersRepoMysql) DeleteUserRole(ctx context.Context, userId string, roleId int) error {
 	_, err := r.db.ExecContext(ctx, qryDeleteUserRole, userId, roleId)
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func (r *repoMysql) DeleteUserRole(ctx context.Context, userId string, roleId in
 	return nil
 }
 
-func (r *repoMysql) GetUserRoles(ctx context.Context, userId string) ([]entity.UserRole, error) {
+func (r *usersRepoMysql) GetUserRoles(ctx context.Context, userId string) ([]entity.UserRole, error) {
 	roles := []entity.UserRole{}
 	err := r.db.SelectContext(ctx, &roles, qryGetUserRoles, userId)
 	if err != nil {
