@@ -17,7 +17,7 @@ func main() {
 			settings.New,
 			database.NewMysqlConection,
 			repository.NewUsersRepoMysql,
-			service.New,
+			service.NewUsersService,
 		),
 		fx.Invoke(),
 	)
