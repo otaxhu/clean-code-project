@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var repo *mocks.Repository = &mocks.Repository{}
+var repo *mocks.UsersRepository = &mocks.UsersRepository{}
 var s UsersService = New(repo)
 var tooLongPassword = "A continuación, colocaré más de 72 caracteres, que es el máximo permitido por la encriptación, para asegurarme de que la prueba sea robusta y cubra todos los posibles casos de uso"
 var existentRolesUserId = uuid.NewString()
